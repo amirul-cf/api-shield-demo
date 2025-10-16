@@ -119,7 +119,7 @@ wrangler secret put JWK_PUBLIC_KEY
 
 ## API Shield Configuration
 
-### Schema Validation - Step by Step Guide
+### Schema Validation
 
 Cloudflare API Shield's Schema Validation protects your API by validating incoming requests against an OpenAPI 3.0 schema. Follow these steps to add and enforce schema validation:
 
@@ -179,7 +179,7 @@ Cloudflare API Shield's Schema Validation protects your API by validating incomi
 4. Select your desired action
 5. Changes apply immediately
 
-### JWT Validation - Step by Step Guide
+### JWT Validation
 
 Cloudflare API Shield's JWT Validation protects your API by validating JSON Web Tokens (JWTs) sent by clients. This ensures that only authenticated requests with valid tokens can access your protected endpoints.
 
@@ -195,8 +195,6 @@ Before configuring JWT validation:
   - Each JWT issuer typically publishes public keys at a known URL (e.g., `https://your-auth-provider.com/.well-known/jwks.json`)
   - If you don't know where to get them, contact your identity administrator
   - For this demo project, you can use the public key from `public-key-example.json`
-
----
 
 #### Step 1: Add a Token Configuration
 
