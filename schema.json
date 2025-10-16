@@ -1,0 +1,167 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "JWT Authentication API",
+    "version": "1.0.0",
+    "description": "API for JWT token generation and validation using RS256 algorithm"
+  },
+  "servers": [
+    {
+      "url": "https://somedomain.com",
+      "description": "Production server"
+    }
+  ],
+  "paths": {
+    "/": {
+      "get": {
+        "summary": "Health check endpoint",
+        "description": "Returns a simple greeting message",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Hello Hono!"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/token": {
+      "post": {
+        "summary": "Generate JWT token",
+        "description": "Creates a JWT token signed with RS256 algorithm using a private JWK",
+        "responses": {
+          "200": {
+            "description": "Token generated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "token": {
+                      "type": "string",
+                      "description": "JWT token signed with RS256",
+                      "example": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9..."
+                    }
+                  },
+                  "required": ["token"]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/secure": {
+      "post": {
+        "summary": "Validate JWT and process secure data",
+        "description": "Validates JWT token from Authorization header and returns client credentials with user ID",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "clientId": {
+                    "type": "string",
+                    "description": "Client identifier",
+                    "example": "client_123"
+                  },
+                  "clientSecret": {
+                    "type": "string",
+                    "description": "Client secret",
+                    "example": "secret_abc123"
+                  }
+                },
+                "required": ["clientId", "clientSecret"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Token validated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "clientId": {
+                      "type": "string",
+                      "description": "Client identifier from request body",
+                      "example": "client_123"
+                    },
+                    "clientSecret": {
+                      "type": "string",
+                      "description": "Client secret from request body",
+                      "example": "secret_abc123"
+                    },
+                    "uid": {
+                      "type": "string",
+                      "description": "User ID extracted from JWT token payload",
+                      "example": "123456"
+                    }
+                  },
+                  "required": ["clientId", "clientSecret", "uid"]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Missing, invalid, or expired token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "JWT token obtained from /token endpoint"
+      }
+    },
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Error message"
+          }
+        },
+        "required": ["error"]
+      }
+    }
+  }
+}
